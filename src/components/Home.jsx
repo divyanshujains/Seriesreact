@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import Allquote from './Allquote'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
-   
+   const navigate = useNavigate()
     const [quote, setquote] = useState("")
     const [allquote, setallquote] = useState([])
     const [Author, setAuthor] = useState("")
     const [ison, setison] = useState(false)
-    const [copied, setCopied] = useState(false);         
+    const [copied, setCopied] = useState(false);  
+
+
     const RandomQuote = async () => {
       try {
         const response = await fetch("https://qapi.vercel.app/api/random");
         const data = await response.json();
         setquote(data.quote);
         setAuthor(data.author);
-        if(quote.length>0){
-        setallquote([...allquote,{ quote ,Author}])
-        }
+         if (data.quote.length > 0) {
+      setallquote(prev => [...prev, { quote: data.quote, Author: data.author }]);
+    }
       } catch (error) {
         console.log(error);
       }
     };
-
-    
 
   useEffect(() => {
      RandomQuote()
@@ -35,8 +36,10 @@ const QuoteChnage = ()=>{
 } 
 
 const ThemeHandler = ()=>{
-setison(!ison);
+setison(!ison)
 }
+
+
 
 const copyit = async ()=>{
     const tocopy = quote;
@@ -52,10 +55,16 @@ const copyit = async ()=>{
   
 }
 
+const seeall = ()=>{
+  const arr = allquote
+  navigate('/allquote', {state:{data:arr}})
+}
+
+
+
 
   return (
     <div 
-    state={{data:allquote}}
     className={` w-full h-screen ${ ison ? "bg-zinc-800 text-white" : "bg-white text-black "} `}> 
     <h1 className='text-3xl text-center' >
       🌟 {quote} 🌟
@@ -76,8 +85,6 @@ const copyit = async ()=>{
         🌓 Toggle Theme
       </button>
 
-
-
       <button 
         onClick={() => { QuoteChnage() }}
          className = ' border border-black p-4  text-2xl text-center  ml-4 mt-4 '
@@ -90,14 +97,23 @@ const copyit = async ()=>{
         onClick={() => { copyit() }}
          className ={` border border-black p-4 ${copied? "bg-green-500" : "bg-pink-400"} text-2xl text-center  ml-4 mt-4 `}
       >
-        {copied ? "copyied": "copy it"   }
+        {copied ? "copyied": "copy the code"   }
+      </button>
+
+
+
+      <button 
+         onClick={seeall}
+         className ={` border border-black p-4  text-2xl text-center  ml-4 mt-4 `}
+      >
+       See allquote
       </button>
 
     
     </div>
 
-    <Allquote data={allquote} />
-
+ 
+  
   </div>
 
 
